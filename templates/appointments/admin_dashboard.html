@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Admin dashboard · MediSlot{% endblock %}
+{% block content %}
+<section class="dashboard-page">
+  <div class="dashboard-welcome"><div><span class="kicker">ADMIN HOME</span><h1>Clinic overview.</h1><p>Welcome, {{ user.username }}. Here is what is happening across MediSlot.</p></div><a class="button" href="{% url 'admin:index' %}">Open Django admin</a></div>
+  <div class="admin-stats"><div><span>Doctors</span><strong>{{ doctor_count }}</strong></div><div><span>Patients</span><strong>{{ patient_count }}</strong></div><div><span>All appointments</span><strong>{{ appointment_count }}</strong></div><div><span>Currently booked</span><strong>{{ booked_count }}</strong></div></div>
+  <div class="dashboard-panel"><div class="panel-title"><h2>Recent bookings</h2><span>Latest 8</span></div><div class="admin-table-wrap"><table><thead><tr><th>Patient</th><th>Doctor</th><th>Date</th><th>Status</th></tr></thead><tbody>{% for appointment in recent_appointments %}<tr><td>{{ appointment.patient_name }}<small>{{ appointment.patient_email }}</small></td><td>Dr. {{ appointment.doctor.name }}<small>{{ appointment.doctor.specialty }}</small></td><td>{{ appointment.appointment_date|date:"d M Y" }}<small>{{ appointment.appointment_time|time:"g:i A" }}</small></td><td><span class="status {{ appointment.status }}">{{ appointment.get_status_display }}</span></td></tr>{% empty %}<tr><td colspan="4">No appointments yet.</td></tr>{% endfor %}</tbody></table></div></div>
+</section>
+{% endblock %}

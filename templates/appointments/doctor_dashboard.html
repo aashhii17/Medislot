@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Doctor dashboard · MediSlot{% endblock %}
+{% block content %}
+<section class="dashboard-page">
+  <div class="dashboard-welcome"><div><span class="kicker">DOCTOR HOME</span><h1>Good day, Dr. {{ doctor.name }}.</h1><p>{{ doctor.specialty }} · {{ booked_count }} active appointment{{ booked_count|pluralize }}</p></div><div class="avatar small">{{ doctor.name|slice:":1" }}</div></div>
+  <div class="dashboard-panel"><div class="panel-title"><h2>Appointment schedule</h2><span>{{ appointments|length }} records</span></div>
+    <div class="doctor-appointment-list">
+      {% for appointment in appointments %}<article class="doctor-appointment">
+        <div class="schedule-time"><strong>{{ appointment.appointment_time|time:"g:i A" }}</strong><span>{{ appointment.appointment_date|date:"d M Y" }}</span></div>
+        <div><span class="status {{ appointment.status }}">{{ appointment.get_status_display }}</span><h3>{{ appointment.patient_name }}</h3><p>{{ appointment.reason }}</p><small>{{ appointment.patient_phone }} · {{ appointment.patient_email }}</small></div>
+        {% if appointment.status == "booked" %}<div class="doctor-actions"><form method="post" action="{% url 'update_appointment_status' appointment.pk 'completed' %}">{% csrf_token %}<button class="complete" type="submit">Mark completed</button></form><form method="post" action="{% url 'update_appointment_status' appointment.pk 'cancelled' %}">{% csrf_token %}<button class="cancel" type="submit">Cancel</button></form></div>{% endif %}
+      </article>{% empty %}<div class="empty"><h3>No appointments yet</h3><p>New patient bookings will appear here.</p></div>{% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

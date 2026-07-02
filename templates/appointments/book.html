@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Book Dr. {{ doctor.name }} · MediSlot{% endblock %}
+{% block content %}
+<section class="page booking-layout">
+  <div class="booking-info"><a class="back" href="{% url 'doctor_detail' doctor.pk %}">← Back to profile</a><span class="kicker">BOOK AN APPOINTMENT</span><h1>Let’s find a time that works.</h1><p>Fill in your details and select a date and time. Your appointment will be confirmed immediately.</p>
+    <div class="selected-doctor"><div class="avatar small">{{ doctor.name|slice:":1" }}</div><div><strong>Dr. {{ doctor.name }}</strong><span>{{ doctor.specialty }} · ₹{{ doctor.consultation_fee|floatformat:0 }}</span></div></div>
+  </div>
+  <form class="form-card" method="post">{% csrf_token %}
+    {% for field in form %}<div class="field"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% for error in field.errors %}<small class="error">{{ error }}</small>{% endfor %}</div>{% endfor %}
+    {% for error in form.non_field_errors %}<small class="error">{{ error }}</small>{% endfor %}
+    <button class="button wide" type="submit">Confirm appointment</button><p class="form-note">Your details are used only to manage this appointment.</p>
+  </form>
+</section>
+{% endblock %}

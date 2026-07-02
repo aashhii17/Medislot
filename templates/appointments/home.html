@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero">
+  <div class="hero-copy">
+    <span class="pill">● Trusted care, easier access</span>
+    <h1>Your health deserves the <em>right</em> attention.</h1>
+    <p>Connect with experienced doctors and book an appointment in minutes. No waiting rooms, no uncertainty.</p>
+    <form class="doctor-search" method="get">
+      <input type="search" name="q" value="{{ query }}" placeholder="Doctor, specialty or qualification">
+      <select name="specialty">
+        <option value="">All specialties</option>
+        {% for item in specialties %}<option value="{{ item }}" {% if selected_specialty == item %}selected{% endif %}>{{ item }}</option>{% endfor %}
+      </select>
+      <button type="submit">Search doctors</button>
+    </form>
+  </div>
+  <div class="hero-art"><div class="cross">+</div><div class="availability"><strong>Available today</strong><span>Book in under 2 minutes</span></div></div>
+</section>
+
+<section class="doctors">
+  <div class="section-head"><div><span class="kicker">OUR SPECIALISTS</span><h2>Care you can count on</h2></div><p>Experienced doctors, transparent fees, and appointment times that work for you.</p></div>
+  <div class="doctor-grid">
+    {% for doctor in doctors %}
+    <article class="doctor-card">
+      <div class="avatar">{{ doctor.name|slice:":1" }}</div>
+      <div class="doctor-main"><span class="specialty">{{ doctor.specialty }}</span><h3>Dr. {{ doctor.name }}</h3><p>{{ doctor.qualification }}</p>
+        <div class="doctor-meta"><span><strong>{{ doctor.experience_years }}</strong> years exp.</span><span><strong>₹{{ doctor.consultation_fee|floatformat:0 }}</strong> consultation</span></div>
+        <div class="card-actions"><a class="button outline" href="{% url 'doctor_detail' doctor.pk %}">View profile</a><a class="button" href="{% url 'book_appointment' doctor.pk %}">Book now</a></div>
+      </div>
+    </article>
+    {% empty %}<div class="empty"><h3>No matching doctors</h3><p>Try a different name or specialty.</p><a href="{% url 'home' %}">Clear search</a></div>{% endfor %}
+  </div>
+</section>
+{% endblock %}

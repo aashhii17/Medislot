@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Dr. {{ doctor.name }} · MediSlot{% endblock %}
+{% block content %}
+<section class="page narrow">
+  <a class="back" href="{% url 'home' %}">← All doctors</a>
+  <div class="profile-card">
+    <div class="avatar large">{{ doctor.name|slice:":1" }}</div>
+    <div><span class="specialty">{{ doctor.specialty }}</span><h1>Dr. {{ doctor.name }}</h1><p class="qualification">{{ doctor.qualification }}</p><p class="bio">{{ doctor.bio }}</p>
+      <div class="profile-stats"><span><strong>{{ doctor.experience_years }}</strong> years experience</span><span><strong>₹{{ doctor.consultation_fee|floatformat:0 }}</strong> consultation fee</span></div>
+      <a class="button wide" href="{% url 'book_appointment' doctor.pk %}">Book an appointment</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

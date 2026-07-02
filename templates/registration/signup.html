@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Create account · MediSlot{% endblock %}
+{% block content %}
+<section class="auth-page signup-page">
+  <div class="auth-copy"><span class="kicker">JOIN MEDISLOT</span><h1>Your personal health desk, ready when you are.</h1><p>Patients can book and manage visits. Doctors can access their daily appointment schedule.</p></div>
+  <form class="form-card auth-card" method="post">{% csrf_token %}<h2>Create your account</h2>
+    {% for field in form %}<div class="field {% if field.name == 'role' %}role-field{% endif %}"><label>{{ field.label }}</label>{{ field }}{% if field.help_text %}<small class="help">{{ field.help_text|safe }}</small>{% endif %}{% for error in field.errors %}<small class="error">{{ error }}</small>{% endfor %}</div>{% endfor %}
+    <button class="button wide" type="submit">Create account</button><p class="auth-switch">Already registered? <a href="{% url 'login' %}">Log in</a></p>
+  </form>
+</section>
+{% endblock %}

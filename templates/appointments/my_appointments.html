@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}My appointments · MediSlot{% endblock %}
+{% block content %}
+<section class="page appointments-page">
+  <span class="kicker">PATIENT PORTAL</span><h1>My appointments</h1><p>Enter the email used during booking to find your appointments.</p>
+  <form class="lookup" method="get">{{ form.email }}<button class="button" type="submit">Find appointments</button></form>
+  {% if appointments is not None %}
+    <div class="appointment-list">
+      {% for appointment in appointments %}<article class="appointment-card">
+        <div class="date-box"><strong>{{ appointment.appointment_date|date:"d" }}</strong><span>{{ appointment.appointment_date|date:"M Y" }}</span></div>
+        <div class="appointment-info"><span class="status {{ appointment.status }}">{{ appointment.get_status_display }}</span><h3>Dr. {{ appointment.doctor.name }}</h3><p>{{ appointment.doctor.specialty }} · {{ appointment.appointment_time|time:"g:i A" }}</p><small>Booking #MS{{ appointment.pk|stringformat:"05d" }}</small></div>
+        {% if appointment.status == "booked" %}<form method="post" action="{% url 'cancel_appointment' appointment.pk %}" onsubmit="return confirm('Cancel this appointment?')">{% csrf_token %}<button class="cancel" type="submit">Cancel appointment</button></form>{% endif %}
+      </article>{% empty %}<div class="empty"><h3>No appointments found</h3><p>Check the email address or book your first visit.</p><a href="{% url 'home' %}">Find a doctor</a></div>{% endfor %}
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

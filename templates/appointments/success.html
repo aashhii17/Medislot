@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Appointment confirmed · MediSlot{% endblock %}
+{% block content %}
+<section class="page narrow success-page">
+  <div class="success-icon">✓</div><span class="kicker">APPOINTMENT CONFIRMED</span><h1>You’re all set.</h1><p>We’ve reserved your appointment. Please arrive 10 minutes early.</p>
+  <div class="confirmation"><div><small>DOCTOR</small><strong>Dr. {{ appointment.doctor.name }}</strong><span>{{ appointment.doctor.specialty }}</span></div><div><small>DATE & TIME</small><strong>{{ appointment.appointment_date|date:"l, d M Y" }}</strong><span>{{ appointment.appointment_time|time:"g:i A" }}</span></div><div><small>PATIENT</small><strong>{{ appointment.patient_name }}</strong><span>{{ appointment.patient_email }}</span></div><div><small>BOOKING ID</small><strong>#MS{{ appointment.pk|stringformat:"05d" }}</strong><span>Keep this for reference</span></div></div>
+  <div class="success-actions"><a class="button" href="{% url 'home' %}">Back to home</a><a class="button outline" href="{% url 'my_appointments' %}?email={{ appointment.patient_email|urlencode }}">View appointments</a></div>
+</section>
+{% endblock %}
