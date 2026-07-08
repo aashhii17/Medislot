@@ -1,20 +1,13 @@
 from django.contrib import admin
 
-from .models import Appointment, Doctor, Profile
-
-
-@admin.register(Doctor)
-class DoctorAdmin(admin.ModelAdmin):
-    list_display = ["name", "specialty", "experience_years", "consultation_fee", "is_available"]
-    list_filter = ["specialty", "is_available"]
-    search_fields = ["name", "specialty", "qualification"]
+from .models import Appointment, Profile
 
 
 @admin.register(Appointment)
 class AppointmentAdmin(admin.ModelAdmin):
     list_display = ["patient_name", "doctor", "appointment_date", "appointment_time", "status"]
-    list_filter = ["status", "appointment_date", "doctor__specialty"]
-    search_fields = ["patient_name", "patient_email", "patient_phone", "doctor__name"]
+    list_filter = ["status", "appointment_date", "doctor__specialization"]
+    search_fields = ["patient_name", "patient_email", "patient_phone", "doctor__user__first_name", "doctor__user__last_name"]
 
 
 @admin.register(Profile)

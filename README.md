@@ -1,24 +1,47 @@
-# MediSlot Doctor Appointment System
+# MediSlot
 
-A Django appointment website with signup/login, separate admin, doctor, and patient dashboards, doctor search, booking, duplicate-slot protection, cancellation, and Django admin.
+MediSlot is a doctor appointment platform with a Django web UI for booking, plus REST APIs for users, hospitals, and doctors.
 
-## Start the project
+## Project structure
+
+```
+Medislot/
+├── appointments/   # Booking UI, dashboards, and core appointment models
+├── users/          # Auth API (health check, current user) and patient profiles
+├── hospitals/      # Hospital catalog API
+├── doctors/        # Doctor catalog API
+├── clinic_site/    # Django settings and URL routing
+├── templates/      # HTML templates
+├── static/         # CSS and static assets
+└── manage.py
+```
+
+## Run locally
 
 ```powershell
-cd "C:\Users\sande\OneDrive\Desktop\python\doctor_appointment"
+cd "C:\Users\sande\OneDrive\Desktop\Medislot"
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
 python manage.py migrate
-python manage.py runserver 8001
-```
-
-Open http://127.0.0.1:8001/.
-
-To manage doctors and appointments through Django admin:
-
-```powershell
 python manage.py createsuperuser
+python manage.py runserver 8000
 ```
 
-Then open http://127.0.0.1:8001/admin/.
+Open http://127.0.0.1:8000/
 
-New patients and doctors can register at http://127.0.0.1:8001/signup/. After login, users are automatically sent to the dashboard for their role. Admin dashboard access is reserved for superusers created with `createsuperuser`.
-# Medislot
+## API endpoints
+
+| Endpoint | Description |
+|---|---|
+| `GET /api/auth/health/` | API health check |
+| `GET /api/auth/me/` | Current authenticated user |
+| `GET /api/hospitals/` | List hospitals |
+| `GET /api/doctors/` | List doctors |
+
+## Features
+
+- Patient and doctor signup/login with role-based dashboards
+- Doctor search and appointment booking
+- Duplicate-slot protection and cancellation
+- Admin dashboard for superusers
+- REST API modules for users, hospitals, and doctors

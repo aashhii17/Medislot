@@ -1,9 +1,91 @@
 {% extends "base.html" %}
 {% block title %}Admin dashboard · MediSlot{% endblock %}
 {% block content %}
-<section class="dashboard-page">
-  <div class="dashboard-welcome"><div><span class="kicker">ADMIN HOME</span><h1>Clinic overview.</h1><p>Welcome, {{ user.username }}. Here is what is happening across MediSlot.</p></div><a class="button" href="{% url 'admin:index' %}">Open Django admin</a></div>
-  <div class="admin-stats"><div><span>Doctors</span><strong>{{ doctor_count }}</strong></div><div><span>Patients</span><strong>{{ patient_count }}</strong></div><div><span>All appointments</span><strong>{{ appointment_count }}</strong></div><div><span>Currently booked</span><strong>{{ booked_count }}</strong></div></div>
-  <div class="dashboard-panel"><div class="panel-title"><h2>Recent bookings</h2><span>Latest 8</span></div><div class="admin-table-wrap"><table><thead><tr><th>Patient</th><th>Doctor</th><th>Date</th><th>Status</th></tr></thead><tbody>{% for appointment in recent_appointments %}<tr><td>{{ appointment.patient_name }}<small>{{ appointment.patient_email }}</small></td><td>Dr. {{ appointment.doctor.name }}<small>{{ appointment.doctor.specialty }}</small></td><td>{{ appointment.appointment_date|date:"d M Y" }}<small>{{ appointment.appointment_time|time:"g:i A" }}</small></td><td><span class="status {{ appointment.status }}">{{ appointment.get_status_display }}</span></td></tr>{% empty %}<tr><td colspan="4">No appointments yet.</td></tr>{% endfor %}</tbody></table></div></div>
-</section>
+<div class="w-full max-w-5xl mx-auto px-6 py-12 text-stone-850 space-y-10">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+    <div>
+      <span class="text-xs font-bold text-amber-600 tracking-widest uppercase">Admin Home</span>
+      <h1 class="text-3xl lg:text-4xl font-black text-stone-900 mt-1">Clinic Overview</h1>
+      <p class="text-sm text-stone-500">Welcome, {{ user.username }}. Here is what is happening across MediSlot.</p>
+    </div>
+    <a 
+      href="{% url 'admin:index' %}" 
+      class="inline-flex items-center justify-center px-6 py-3 bg-stone-900 hover:bg-stone-800 text-white font-bold rounded-xl text-xs shadow-md transition-all hover:scale-[1.01]"
+    >
+      Open Django Admin
+    </a>
+  </div>
+
+  <!-- Key Metrics Row -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+    <div class="bg-white p-6 rounded-[28px] border border-stone-200 shadow-md">
+      <span class="text-[10px] text-stone-400 font-bold uppercase tracking-wider">Registered Doctors</span>
+      <p class="text-3xl font-black text-stone-900 mt-1">{{ doctor_count }}</p>
+    </div>
+    <div class="bg-white p-6 rounded-[28px] border border-stone-200 shadow-md">
+      <span class="text-[10px] text-stone-400 font-bold uppercase tracking-wider">Patient Accounts</span>
+      <p class="text-3xl font-black text-stone-900 mt-1">{{ patient_count }}</p>
+    </div>
+    <div class="bg-white p-6 rounded-[28px] border border-stone-200 shadow-md">
+      <span class="text-[10px] text-stone-400 font-bold uppercase tracking-wider">Total Bookings</span>
+      <p class="text-3xl font-black text-stone-900 mt-1">{{ appointment_count }}</p>
+    </div>
+    <div class="bg-white p-6 rounded-[28px] border border-stone-200 shadow-md">
+      <span class="text-[10px] text-stone-400 font-bold uppercase tracking-wider">Currently Booked</span>
+      <p class="text-3xl font-black text-stone-900 mt-1">{{ booked_count }}</p>
+    </div>
+  </div>
+
+  <!-- Recent Appointments Table Card -->
+  <div class="bg-white rounded-[36px] border border-stone-200 shadow-xl p-8 space-y-6">
+    <div class="flex items-center justify-between border-b border-stone-100 pb-4">
+      <h2 class="text-xl font-extrabold text-stone-900">Recent Bookings</h2>
+      <span class="bg-stone-100 px-3 py-1 rounded-full text-xs font-bold text-stone-600">
+        Latest 8
+      </span>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm text-stone-600">
+        <thead class="bg-stone-50 text-[10px] font-bold text-stone-400 uppercase tracking-widest border-b border-stone-200">
+          <tr>
+            <th class="px-6 py-4">Patient</th>
+            <th class="px-6 py-4">Doctor</th>
+            <th class="px-6 py-4">Date</th>
+            <th class="px-6 py-4">Status</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-stone-100">
+          {% for appointment in recent_appointments %}
+            <tr class="hover:bg-stone-50/50">
+              <td class="px-6 py-4">
+                <div class="font-bold text-stone-900">{{ appointment.patient_name }}</div>
+                <div class="text-[10px] text-stone-400">{{ appointment.patient_email }}</div>
+              </td>
+              <td class="px-6 py-4">
+                <div class="font-bold text-stone-900">Dr. {{ appointment.doctor.name }}</div>
+                <div class="text-[10px] text-stone-400">{{ appointment.doctor.specialty }}</div>
+              </td>
+              <td class="px-6 py-4">
+                <div class="font-bold text-stone-900">{{ appointment.appointment_date|date:"d M Y" }}</div>
+                <div class="text-[10px] text-stone-400">{{ appointment.appointment_time|time:"g:i A" }}</div>
+              </td>
+              <td class="px-6 py-4">
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider 
+                  {% if appointment.status == 'booked' %}bg-amber-100 text-amber-700{% elif appointment.status == 'completed' %}bg-emerald-100 text-emerald-700{% else %}bg-red-100 text-red-700{% endif %}"
+                >
+                  {{ appointment.get_status_display }}
+                </span>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="4" class="px-6 py-8 text-center text-stone-400 italic">No appointments booked yet.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
 {% endblock %}

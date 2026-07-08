@@ -1,14 +1,70 @@
 {% extends "base.html" %}
 {% block title %}Log in · MediSlot{% endblock %}
 {% block content %}
-<section class="auth-page">
-  <div class="auth-copy"><span class="kicker">WELCOME BACK</span><h1>Good care starts with one small step.</h1><p>Log in to manage appointments and access your personal dashboard.</p></div>
-  <form class="form-card auth-card" method="post">{% csrf_token %}
-    <h2>Log in to MediSlot</h2>
-    {% if form.non_field_errors %}<div class="auth-error">Your username or password is incorrect.</div>{% endif %}
-    {% for field in form %}<div class="field"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% for error in field.errors %}<small class="error">{{ error }}</small>{% endfor %}</div>{% endfor %}
-    {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
-    <button class="button wide" type="submit">Log in</button><p class="auth-switch">New here? <a href="{% url 'signup' %}">Create an account</a></p>
-  </form>
-</section>
+<div class="min-h-[70vh] relative flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 overflow-hidden text-stone-850">
+  <!-- Decorative colored glow background -->
+  <div class="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-amber-500/10 rounded-full blur-[100px] pointer-events-none"></div>
+  <div class="absolute bottom-1/4 right-1/4 translate-x-1/2 translate-y-1/2 w-96 h-96 bg-orange-500/10 rounded-full blur-[100px] pointer-events-none"></div>
+
+  <div class="max-w-md w-full relative z-10">
+    <div class="bg-white p-8 rounded-[36px] border border-stone-200 shadow-xl space-y-6">
+      <div class="text-center space-y-2">
+        <h2 class="text-3xl font-extrabold tracking-tight text-stone-900">
+          Sign In
+        </h2>
+        <p class="text-sm text-stone-500">
+          Log in to manage appointments and access your personal dashboard
+        </p>
+      </div>
+
+      {% if form.non_field_errors %}
+        <div class="bg-red-50 border border-red-200 text-red-600 text-xs rounded-xl p-3">
+          Your username or password is incorrect.
+        </div>
+      {% endif %}
+
+      <form class="space-y-4" method="post">
+        {% csrf_token %}
+        {% for field in form %}
+          <div class="space-y-1.5">
+            <label for="{{ field.id_for_label }}" class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">
+              {{ field.label }}
+            </label>
+            <input 
+              type="{% if 'password' in field.name %}password{% else %}text{% endif %}"
+              name="{{ field.name }}"
+              id="{{ field.id_for_label }}"
+              required
+              class="w-full bg-[#FDFBF7] border border-stone-200 text-stone-850 placeholder-stone-400 focus:border-amber-500 focus:outline-none rounded-xl h-11 px-4 text-sm"
+              value="{% if field.value %}{{ field.value }}{% endif %}"
+            />
+            {% for error in field.errors %}
+              <small class="text-xs text-red-500 font-medium block mt-1">{{ error }}</small>
+            {% endfor %}
+          </div>
+        {% endfor %}
+
+        {% if next %}
+          <input type="hidden" name="next" value="{{ next }}">
+        {% endif %}
+
+        <button 
+          type="submit"
+          class="w-full h-11 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold rounded-xl shadow-lg shadow-amber-500/10 hover:opacity-95 transition-all text-sm mt-6"
+        >
+          Sign In
+        </button>
+      </form>
+
+      <div class="text-center pt-2">
+        <p class="text-sm text-stone-550">
+          Don't have an account?{' '}
+          <a href="{% url 'signup' %}" class="font-bold text-amber-600 hover:underline">
+            Register now
+          </a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

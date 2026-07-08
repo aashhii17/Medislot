@@ -1,34 +1,197 @@
 {% extends "base.html" %}
-{% block content %}
-<section class="hero">
-  <div class="hero-copy">
-    <span class="pill">● Trusted care, easier access</span>
-    <h1>Your health deserves the <em>right</em> attention.</h1>
-    <p>Connect with experienced doctors and book an appointment in minutes. No waiting rooms, no uncertainty.</p>
-    <form class="doctor-search" method="get">
-      <input type="search" name="q" value="{{ query }}" placeholder="Doctor, specialty or qualification">
-      <select name="specialty">
-        <option value="">All specialties</option>
-        {% for item in specialties %}<option value="{{ item }}" {% if selected_specialty == item %}selected{% endif %}>{{ item }}</option>{% endfor %}
-      </select>
-      <button type="submit">Search doctors</button>
-    </form>
-  </div>
-  <div class="hero-art"><div class="cross">+</div><div class="availability"><strong>Available today</strong><span>Book in under 2 minutes</span></div></div>
-</section>
+{% load static %}
 
-<section class="doctors">
-  <div class="section-head"><div><span class="kicker">OUR SPECIALISTS</span><h2>Care you can count on</h2></div><p>Experienced doctors, transparent fees, and appointment times that work for you.</p></div>
-  <div class="doctor-grid">
-    {% for doctor in doctors %}
-    <article class="doctor-card">
-      <div class="avatar">{{ doctor.name|slice:":1" }}</div>
-      <div class="doctor-main"><span class="specialty">{{ doctor.specialty }}</span><h3>Dr. {{ doctor.name }}</h3><p>{{ doctor.qualification }}</p>
-        <div class="doctor-meta"><span><strong>{{ doctor.experience_years }}</strong> years exp.</span><span><strong>₹{{ doctor.consultation_fee|floatformat:0 }}</strong> consultation</span></div>
-        <div class="card-actions"><a class="button outline" href="{% url 'doctor_detail' doctor.pk %}">View profile</a><a class="button" href="{% url 'book_appointment' doctor.pk %}">Book now</a></div>
+{% block content %}
+<div class="relative w-full max-w-7xl mx-auto px-6 py-12 text-stone-850">
+  <!-- Glowing backgrounds -->
+  <div class="absolute top-10 left-10 w-72 h-72 bg-amber-500/5 rounded-full blur-3xl pointer-events-none"></div>
+  <div class="absolute bottom-20 right-10 w-96 h-96 bg-orange-500/5 rounded-full blur-3xl pointer-events-none"></div>
+
+  <!-- Hero Section -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-24 relative z-10">
+    <div class="space-y-6">
+      <span class="inline-block bg-amber-500/10 text-amber-700 px-4 py-1.5 rounded-full text-xs font-bold tracking-wider uppercase">
+        ✦ 100% Verified Health Professionals
+      </span>
+      <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-stone-900 leading-[1.1]">
+        Healthcare for <br />
+        <span class="bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent">Personalised</span> <br />
+        Wellness solutions!
+      </h1>
+      <p class="text-stone-555 text-stone-500 text-base max-w-lg leading-relaxed">
+        Connect with our top medical professionals, book instant schedule slots, and monitor prescriptions on the fly.
+      </p>
+
+      <!-- Advanced Search Form -->
+      <form class="bg-white p-3 rounded-[28px] border border-stone-200/80 shadow-xl space-y-3 sm:space-y-0 sm:flex gap-3" method="get">
+        <div class="flex-1 relative">
+          <input 
+            type="search" 
+            name="q" 
+            value="{{ query|default:'' }}" 
+            placeholder="Search doctor name or specialty..." 
+            class="w-full bg-[#FDFBF7] border border-stone-200 text-stone-800 placeholder-stone-400 focus:outline-none rounded-2xl h-12 px-4 text-sm"
+          />
+        </div>
+        <div class="w-full sm:w-48">
+          <select 
+            name="specialty" 
+            class="w-full bg-[#FDFBF7] border border-stone-200 text-stone-800 focus:outline-none rounded-2xl h-12 px-3 text-sm"
+          >
+            <option value="">All Specialties</option>
+            {% for item in specialties %}
+              <option value="{{ item }}" {% if selected_specialty == item %}selected{% endif %}>{{ item }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <button 
+          type="submit" 
+          class="w-full sm:w-auto px-6 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold rounded-2xl shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all h-12 text-sm flex items-center justify-center gap-1.5"
+        >
+          Search Doctors
+        </button>
+      </form>
+
+      <div class="flex items-center gap-6 pt-4">
+        <div class="flex -space-x-3">
+          <div class="w-10 h-10 rounded-full border-2 border-[#FDFBF7] bg-amber-500/20 text-xs font-bold flex items-center justify-center">Dr</div>
+          <div class="w-10 h-10 rounded-full border-2 border-[#FDFBF7] bg-orange-500/20 text-xs font-bold flex items-center justify-center">Dr</div>
+          <div class="w-10 h-10 rounded-full border-2 border-[#FDFBF7] bg-stone-500/20 text-xs font-bold flex items-center justify-center">+50</div>
+        </div>
+        <div>
+          <p class="text-xs font-bold text-stone-900">Over 50+ Top Specialists</p>
+          <p class="text-[10px] text-stone-400">Available for telemedicine and clinic appointments</p>
+        </div>
       </div>
-    </article>
-    {% empty %}<div class="empty"><h3>No matching doctors</h3><p>Try a different name or specialty.</p><a href="{% url 'home' %}">Clear search</a></div>{% endfor %}
+    </div>
+
+    <!-- Right Hero illustration / photo -->
+    <div class="relative flex justify-center">
+      <div class="relative w-full max-w-[480px] aspect-[4/5] rounded-[48px] overflow-hidden shadow-2xl border-4 border-white/50 bg-[#FFF9F3]">
+        <img 
+          src="{% static 'appointments/hero_doctor.png' %}" 
+          alt="MediSlot Hero Specialist" 
+          class="w-full h-full object-cover filter saturate-[1.05]"
+        />
+        <!-- Overlay Badges -->
+        <div class="absolute top-6 right-6 bg-white/75 backdrop-blur-md border border-white/40 px-4 py-2 rounded-2xl shadow-lg flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span class="text-xs font-bold text-stone-800">Surgical Department</span>
+        </div>
+        <div class="absolute bottom-16 left-6 bg-white/75 backdrop-blur-md border border-white/40 px-4 py-2 rounded-2xl shadow-lg flex items-center gap-2">
+          <span class="text-xs font-bold text-stone-850">Healthy Patients</span>
+          <span class="text-xs">⭐️ 4.9</span>
+        </div>
+      </div>
+    </div>
   </div>
-</section>
+
+  <!-- World of Health Segment -->
+  <div class="mb-24 relative z-10">
+    <div class="text-center max-w-2xl mx-auto space-y-4 mb-16">
+      <h2 class="text-4xl font-extrabold tracking-tight text-stone-900">World of health</h2>
+      <p class="text-stone-500 text-sm leading-relaxed">
+        Join us at the forefront of a healthcare revolution. We are dedicated to delivering state-of-the-art specialist accessibility, transparent pricing model, and patient-first diagnostics.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div class="bg-white p-8 rounded-[36px] border border-stone-200/80 shadow-md space-y-4">
+        <div class="w-12 h-12 bg-amber-500/10 text-amber-600 rounded-2xl flex items-center justify-center font-bold text-lg">01</div>
+        <h3 class="text-xl font-bold text-stone-950">Patient-Centric Portal</h3>
+        <p class="text-stone-500 text-xs leading-relaxed">
+          Book appointments easily and securely store your digital prescriptions, treatment records, and diagnostic reports.
+        </p>
+      </div>
+
+      <div class="bg-white p-8 rounded-[36px] border border-stone-200/80 shadow-md space-y-4">
+        <div class="w-12 h-12 bg-orange-500/10 text-orange-600 rounded-2xl flex items-center justify-center font-bold text-lg">02</div>
+        <h3 class="text-xl font-bold text-stone-950">Active Slot Engine</h3>
+        <p class="text-stone-500 text-xs leading-relaxed">
+          Instantly search doctor availability, select live time slots, and book verified clinicians with zero waiting time.
+        </p>
+      </div>
+
+      <div class="bg-white p-8 rounded-[36px] border border-stone-200/80 shadow-md space-y-4">
+        <div class="w-12 h-12 bg-emerald-500/10 text-emerald-600 rounded-2xl flex items-center justify-center font-bold text-lg">03</div>
+        <h3 class="text-xl font-bold text-stone-950">Precision Treatment</h3>
+        <p class="text-stone-500 text-xs leading-relaxed">
+          Get transparent fee structures, verified provider credentials, and access to premium clinic and teleconsultation care.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Specialists List -->
+  <div class="relative z-10">
+    <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+      <div>
+        <span class="text-xs font-bold text-amber-600 tracking-widest uppercase">Our Specialists</span>
+        <h2 class="text-3xl font-extrabold tracking-tight text-stone-900 mt-1">Care you can count on</h2>
+      </div>
+      <p class="text-stone-500 text-sm max-w-md">
+        Browse qualified doctors, check their experience details, consultation fees, and schedule an appointment instantly.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {% for doctor in doctors %}
+        <div class="bg-white rounded-[36px] border border-stone-200/80 shadow-lg hover:shadow-xl hover:scale-[1.01] transition-all overflow-hidden flex flex-col justify-between">
+          <div class="p-6 space-y-5">
+            <div class="flex items-center gap-4">
+              <div class="w-16 h-16 rounded-full bg-gradient-to-tr from-amber-500 to-orange-500 text-white flex items-center justify-center font-bold text-lg uppercase shrink-0">
+                {{ doctor.name|slice:":2" }}
+              </div>
+              <div>
+                <span class="inline-block bg-amber-500/10 text-amber-700 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
+                  {{ doctor.specialty }}
+                </span>
+                <h3 class="text-lg font-bold text-stone-900 mt-1">Dr. {{ doctor.name }}</h3>
+                <p class="text-xs text-stone-400">{{ doctor.qualification }}</p>
+              </div>
+            </div>
+
+            <p class="text-xs text-stone-500 leading-relaxed">
+              Specialized practitioner at {{ doctor.hospital.name|default:"MediSlot Medical Center" }}. Providing transparent healthcare with high patient recovery rates.
+            </p>
+
+            <div class="grid grid-cols-2 gap-4 pt-4 border-t border-stone-100 text-xs">
+              <div>
+                <p class="text-[10px] text-stone-400 uppercase font-bold tracking-wider">Experience</p>
+                <p class="font-bold text-stone-900 mt-0.5">{{ doctor.experience_years }} Years</p>
+              </div>
+              <div>
+                <p class="text-[10px] text-stone-400 uppercase font-bold tracking-wider">Consultation Fee</p>
+                <p class="font-bold text-stone-900 mt-0.5">₹{{ doctor.consultation_fee|floatformat:0 }}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="px-6 pb-6 pt-2 grid grid-cols-2 gap-3 bg-stone-50/50 border-t border-stone-100">
+            <a 
+              href="{% url 'doctor_detail' doctor.pk %}" 
+              class="w-full py-2.5 text-center bg-stone-100 hover:bg-stone-200 text-stone-850 font-bold rounded-xl text-xs transition-colors border border-stone-200"
+            >
+              View Profile
+            </a>
+            <a 
+              href="{% url 'book_appointment' doctor.pk %}" 
+              class="w-full py-2.5 text-center bg-gradient-to-r from-amber-500 to-orange-500 hover:opacity-95 text-white font-bold rounded-xl text-xs shadow-md transition-all"
+            >
+              Book Now
+            </a>
+          </div>
+        </div>
+      {% empty %}
+        <div class="col-span-full bg-white border border-dashed border-stone-300 rounded-[36px] p-12 text-center space-y-3">
+          <h3 class="text-lg font-bold text-stone-850">No matching doctors found</h3>
+          <p class="text-xs text-stone-400 max-w-sm mx-auto">Try clearing your filters or entering a different specialty name.</p>
+          <a href="{% url 'home' %}" class="inline-block px-5 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-850 font-bold rounded-xl text-xs border border-stone-200 mt-2">
+            Clear Search
+          </a>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
 {% endblock %}

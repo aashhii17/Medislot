@@ -1,9 +1,59 @@
 {% extends "base.html" %}
 {% block title %}Appointment confirmed · MediSlot{% endblock %}
 {% block content %}
-<section class="page narrow success-page">
-  <div class="success-icon">✓</div><span class="kicker">APPOINTMENT CONFIRMED</span><h1>You’re all set.</h1><p>We’ve reserved your appointment. Please arrive 10 minutes early.</p>
-  <div class="confirmation"><div><small>DOCTOR</small><strong>Dr. {{ appointment.doctor.name }}</strong><span>{{ appointment.doctor.specialty }}</span></div><div><small>DATE & TIME</small><strong>{{ appointment.appointment_date|date:"l, d M Y" }}</strong><span>{{ appointment.appointment_time|time:"g:i A" }}</span></div><div><small>PATIENT</small><strong>{{ appointment.patient_name }}</strong><span>{{ appointment.patient_email }}</span></div><div><small>BOOKING ID</small><strong>#MS{{ appointment.pk|stringformat:"05d" }}</strong><span>Keep this for reference</span></div></div>
-  <div class="success-actions"><a class="button" href="{% url 'home' %}">Back to home</a><a class="button outline" href="{% url 'my_appointments' %}?email={{ appointment.patient_email|urlencode }}">View appointments</a></div>
-</section>
+<div class="w-full max-w-2xl mx-auto px-6 py-16 text-stone-850 text-center space-y-8">
+  <div class="w-20 h-20 rounded-full bg-emerald-500/10 text-emerald-600 flex items-center justify-center font-bold text-3xl mx-auto border-2 border-emerald-500/20 animate-bounce">
+    ✓
+  </div>
+  
+  <div class="space-y-2">
+    <span class="text-xs font-bold text-emerald-600 uppercase tracking-widest">Appointment Confirmed</span>
+    <h1 class="text-4xl font-black text-stone-900">You’re all set.</h1>
+    <p class="text-sm text-stone-500 max-w-md mx-auto">
+      We’ve reserved your appointment. Please arrive 10 minutes prior to your scheduled consultation.
+    </p>
+  </div>
+  
+  <div class="bg-white rounded-[36px] border border-stone-200 shadow-xl overflow-hidden divide-y divide-stone-100 text-left">
+    <div class="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-stone-100">
+      <div class="p-6">
+        <span class="text-[10px] text-amber-600 font-bold uppercase tracking-wider">Doctor</span>
+        <h4 class="font-extrabold text-stone-900 mt-1">Dr. {{ appointment.doctor.name }}</h4>
+        <p class="text-xs text-stone-400">{{ appointment.doctor.specialty }}</p>
+      </div>
+      <div class="p-6">
+        <span class="text-[10px] text-amber-600 font-bold uppercase tracking-wider">Date & Time</span>
+        <h4 class="font-extrabold text-stone-900 mt-1">{{ appointment.appointment_date|date:"l, d M Y" }}</h4>
+        <p class="text-xs text-stone-400">{{ appointment.appointment_time|time:"g:i A" }}</p>
+      </div>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-stone-100">
+      <div class="p-6">
+        <span class="text-[10px] text-amber-600 font-bold uppercase tracking-wider">Patient</span>
+        <h4 class="font-extrabold text-stone-900 mt-1">{{ appointment.patient_name }}</h4>
+        <p class="text-xs text-stone-400">{{ appointment.patient_email }}</p>
+      </div>
+      <div class="p-6">
+        <span class="text-[10px] text-amber-600 font-bold uppercase tracking-wider">Booking ID</span>
+        <h4 class="font-extrabold text-stone-900 mt-1">#MS{{ appointment.pk|stringformat:"05d" }}</h4>
+        <p class="text-xs text-stone-400">Keep this ID for check-in</p>
+      </div>
+    </div>
+  </div>
+  
+  <div class="flex flex-col sm:flex-row justify-center gap-4 pt-4">
+    <a 
+      href="{% url 'home' %}" 
+      class="px-8 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold rounded-xl text-xs shadow-md transition-all hover:scale-[1.01]"
+    >
+      Back to Home
+    </a>
+    <a 
+      href="{% url 'my_appointments' %}?email={{ appointment.patient_email|urlencode }}" 
+      class="px-8 py-3 bg-stone-100 hover:bg-stone-200 text-stone-850 font-bold rounded-xl text-xs transition-colors border border-stone-200"
+    >
+      View My Appointments
+    </a>
+  </div>
+</div>
 {% endblock %}

@@ -3,21 +3,14 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import Q
 
+from doctors.models import Doctor
 
-class Doctor(models.Model):
-    name = models.CharField(max_length=120)
-    specialty = models.CharField(max_length=100)
-    qualification = models.CharField(max_length=150)
-    experience_years = models.PositiveIntegerField(default=1)
-    consultation_fee = models.DecimalField(max_digits=8, decimal_places=2, validators=[MinValueValidator(0)])
-    bio = models.TextField(blank=True)
-    is_available = models.BooleanField(default=True)
 
-    class Meta:
-        ordering = ["specialty", "name"]
+class TimeSlot(models.Model):
+    time = models.CharField(max_length=5, unique=True)  # e.g., "09:00"
 
     def __str__(self):
-        return f"Dr. {self.name} — {self.specialty}"
+        return self.time
 
 
 class Appointment(models.Model):
@@ -35,6 +28,13 @@ class Appointment(models.Model):
     appointment_time = models.TimeField()
     reason = models.TextField()
     status = models.CharField(max_length=12, choices=Status.choices, default=Status.BOOKED)
+    video_link = models.CharField(max_length=255, default="", blank=True)
+    is_emergency = models.BooleanField(default=False)
+    payment_status = models.CharField(
+        max_length=20, 
+        choices=[('pending', 'Pending'), ('paid', 'Paid')], 
+        default='paid'
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -62,3 +62,50 @@ class Profile(models.Model):
 
     def __str__(self):
         return f"{self.user.username} ({self.get_role_display()})"
+
+
+class Prescription(models.Model):
+    appointment = models.OneToOneField(Appointment, on_delete=models.CASCADE, related_name="prescription")
+    medicine = models.TextField()
+    dosage = models.CharField(max_length=100)  # e.g., "1-0-1"
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Prescription for {self.appointment.patient_name}"
+
+
+class MedicalReport(models.Model):
+    patient = models.ForeignKey(User, on_delete=models.CASCADE, related_name="medical_reports")
+    file = models.FileField(upload_to="reports/", blank=True, null=True)
+    file_url = models.CharField(max_length=500, blank=True, null=True)  # custom URL fallback
+    title = models.CharField(max_length=200)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Report {self.title} for {self.patient.username}"
+
+
+class Review(models.Model):
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name="reviews")
+    patient = models.ForeignKey(User, on_delete=models.CASCADE, related_name="reviews")
+    rating = models.PositiveIntegerField(default=5)  # 1 to 5
+    comment = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"Review ({self.rating} stars) for Dr. {self.doctor.user.username}"
+
+
+class DoctorHoliday(models.Model):
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name="holidays")
+    date = models.DateField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("doctor", "date")
+
+    def __str__(self):
+        return f"Dr. {self.doctor.user.username} on holiday at {self.date}"

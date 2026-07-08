@@ -7,25 +7,70 @@
   <title>{% block title %}MediSlot{% endblock %}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Newsreader:ital,opsz,wght@1,6..72,500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{% static 'appointments/style.css' %}">
-  <link rel="stylesheet" href="{% static 'appointments/auth.css' %}">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ["Outfit", "Inter", "sans-serif"],
+          },
+          colors: {
+            primary: '#C46300',
+            secondary: '#E07B0A',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Outfit', 'Inter', sans-serif;
+      background-color: #FDFBF7;
+    }
+  </style>
 </head>
-<body>
-  <header class="header">
-    <a class="logo" href="{% url 'home' %}"><span>+</span> MediSlot</a>
-    <nav>
-      <a href="{% url 'home' %}">Find a doctor</a>
+<body class="bg-[#FDFBF7] text-stone-850 antialiased min-h-screen flex flex-col justify-between">
+  <header class="w-full max-w-7xl mx-auto px-6 py-4 flex items-center justify-between sticky top-0 z-50 bg-[#FDFBF7]/85 backdrop-blur-md border-b border-stone-200/50">
+    <a class="flex items-center gap-2 font-black text-2xl tracking-tight text-stone-900" href="{% url 'home' %}">
+      <span class="w-8 h-8 rounded-xl bg-gradient-to-tr from-amber-500 to-orange-500 text-white flex items-center justify-center font-black">+</span> 
+      <span class="bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent">MediSlot</span>
+    </a>
+    <nav class="flex items-center gap-6 font-bold text-sm text-stone-600">
+      <a href="{% url 'home' %}" class="hover:text-amber-600 transition-colors">Find a doctor</a>
       {% if user.is_authenticated %}
-        <a href="{% url 'dashboard' %}">Dashboard</a>
-        <form class="nav-form" method="post" action="{% url 'logout' %}">{% csrf_token %}<button type="submit">Log out</button></form>
+        <a href="{% url 'dashboard' %}" class="hover:text-amber-600 transition-colors">Dashboard</a>
+        <form class="inline" method="post" action="{% url 'logout' %}">
+          {% csrf_token %}
+          <button type="submit" class="hover:text-red-600 transition-colors font-bold text-sm bg-transparent border-none cursor-pointer">Log out</button>
+        </form>
       {% else %}
-        <a href="{% url 'login' %}">Log in</a><a class="nav-signup" href="{% url 'signup' %}">Sign up</a>
+        <a href="{% url 'login' %}" class="hover:text-amber-600 transition-colors">Log in</a>
+        <a class="px-5 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold rounded-xl shadow-lg shadow-amber-500/10 hover:opacity-95 transition-all text-xs" href="{% url 'signup' %}">Sign up</a>
       {% endif %}
     </nav>
   </header>
-  {% if messages %}<div class="messages">{% for message in messages %}<div class="message {{ message.tags }}">{{ message }}</div>{% endfor %}</div>{% endif %}
-  <main>{% block content %}{% endblock %}</main>
-  <footer><a class="logo" href="{% url 'home' %}"><span>+</span> MediSlot</a><p>Simple, reliable appointment booking.</p></footer>
+  
+  {% if messages %}
+    <div class="fixed top-20 right-6 z-50 space-y-2">
+      {% for message in messages %}
+        <div class="px-5 py-3 rounded-xl bg-amber-500 text-white font-bold shadow-lg text-sm">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+  
+  <main class="flex-grow">
+    {% block content %}{% endblock %}
+  </main>
+  
+  <footer class="w-full max-w-7xl mx-auto px-6 py-10 border-t border-stone-200/50 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-stone-500">
+    <a class="flex items-center gap-2 font-black text-lg text-stone-900" href="{% url 'home' %}">
+      <span class="w-6 h-6 rounded-lg bg-gradient-to-tr from-amber-500 to-orange-500 text-white flex items-center justify-center font-black">+</span> 
+      <span class="bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent">MediSlot</span>
+    </a>
+    <p>© 2026 MediSlot Inc. Simple, reliable appointment booking.</p>
+  </footer>
 </body>
 </html>

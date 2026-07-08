@@ -1,14 +1,82 @@
 {% extends "base.html" %}
 {% block title %}Book Dr. {{ doctor.name }} · MediSlot{% endblock %}
 {% block content %}
-<section class="page booking-layout">
-  <div class="booking-info"><a class="back" href="{% url 'doctor_detail' doctor.pk %}">← Back to profile</a><span class="kicker">BOOK AN APPOINTMENT</span><h1>Let’s find a time that works.</h1><p>Fill in your details and select a date and time. Your appointment will be confirmed immediately.</p>
-    <div class="selected-doctor"><div class="avatar small">{{ doctor.name|slice:":1" }}</div><div><strong>Dr. {{ doctor.name }}</strong><span>{{ doctor.specialty }} · ₹{{ doctor.consultation_fee|floatformat:0 }}</span></div></div>
+<div class="w-full max-w-6xl mx-auto px-6 py-12 text-stone-850">
+  <div class="grid grid-cols-1 lg:grid-cols-5 gap-12">
+    <!-- Info Column -->
+    <div class="lg:col-span-2 space-y-6">
+      <a class="inline-flex items-center gap-1.5 text-xs text-stone-400 hover:text-stone-800 font-bold mb-2 transition-colors" href="{% url 'doctor_detail' doctor.pk %}">
+        ← Back to profile
+      </a>
+      
+      <span class="inline-block bg-amber-500/10 text-amber-700 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+        Book Appointment
+      </span>
+      
+      <h1 class="text-3xl lg:text-4xl font-black text-stone-900 leading-tight">Let’s find a time that works.</h1>
+      
+      <p class="text-sm text-stone-500 leading-relaxed">
+        Fill in your details and select a date and time. Your appointment will be confirmed immediately.
+      </p>
+      
+      <div class="bg-white p-5 rounded-[28px] border border-stone-200 shadow-md flex items-center gap-4">
+        <div class="w-14 h-14 rounded-full bg-gradient-to-tr from-amber-500 to-orange-500 text-white flex items-center justify-center font-bold text-lg uppercase shrink-0">
+          {{ doctor.name|slice:":2" }}
+        </div>
+        <div>
+          <h4 class="font-bold text-stone-900">Dr. {{ doctor.name }}</h4>
+          <p class="text-xs text-stone-400">{{ doctor.specialty }} · ₹{{ doctor.consultation_fee|floatformat:0 }}</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Form Column -->
+    <div class="lg:col-span-3">
+      <div class="bg-white p-8 rounded-[36px] border border-stone-200 shadow-xl space-y-6">
+        <h3 class="text-xl font-extrabold text-stone-900">Patient Details & Scheduling</h3>
+        
+        <form class="space-y-4" method="post">
+          {% csrf_token %}
+          {% for field in form %}
+            <div class="space-y-1.5">
+              <label for="{{ field.id_for_label }}" class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">
+                {{ field.label }}
+              </label>
+              
+              <input 
+                type="{% if 'date' in field.name %}date{% elif 'time' in field.name %}time{% else %}text{% endif %}"
+                name="{{ field.name }}"
+                id="{{ field.id_for_label }}"
+                required
+                class="w-full bg-[#FDFBF7] border border-stone-200 text-stone-850 placeholder-stone-400 focus:border-amber-500 focus:outline-none rounded-xl h-11 px-4 text-sm"
+                value="{% if field.value %}{{ field.value }}{% endif %}"
+              />
+              
+              {% for error in field.errors %}
+                <small class="text-xs text-red-500 font-medium block mt-1">{{ error }}</small>
+              {% endfor %}
+            </div>
+          {% endfor %}
+          
+          {% for error in form.non_field_errors %}
+            <div class="bg-red-50 border border-red-200 text-red-600 text-xs rounded-xl p-3 mt-4">
+              {{ error }}
+            </div>
+          {% endfor %}
+          
+          <button 
+            type="submit" 
+            class="w-full h-12 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold rounded-xl shadow-lg shadow-amber-500/10 hover:opacity-95 transition-all text-sm mt-6"
+          >
+            Confirm Appointment Booking
+          </button>
+          
+          <p class="text-[10px] text-stone-400 text-center mt-2 leading-relaxed">
+            * Your details are used strictly to coordinate and register this medical slot request.
+          </p>
+        </form>
+      </div>
+    </div>
   </div>
-  <form class="form-card" method="post">{% csrf_token %}
-    {% for field in form %}<div class="field"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% for error in field.errors %}<small class="error">{{ error }}</small>{% endfor %}</div>{% endfor %}
-    {% for error in form.non_field_errors %}<small class="error">{{ error }}</small>{% endfor %}
-    <button class="button wide" type="submit">Confirm appointment</button><p class="form-note">Your details are used only to manage this appointment.</p>
-  </form>
-</section>
+</div>
 {% endblock %}

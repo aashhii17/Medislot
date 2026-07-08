@@ -1,11 +1,80 @@
 {% extends "base.html" %}
 {% block title %}Create account · MediSlot{% endblock %}
 {% block content %}
-<section class="auth-page signup-page">
-  <div class="auth-copy"><span class="kicker">JOIN MEDISLOT</span><h1>Your personal health desk, ready when you are.</h1><p>Patients can book and manage visits. Doctors can access their daily appointment schedule.</p></div>
-  <form class="form-card auth-card" method="post">{% csrf_token %}<h2>Create your account</h2>
-    {% for field in form %}<div class="field {% if field.name == 'role' %}role-field{% endif %}"><label>{{ field.label }}</label>{{ field }}{% if field.help_text %}<small class="help">{{ field.help_text|safe }}</small>{% endif %}{% for error in field.errors %}<small class="error">{{ error }}</small>{% endfor %}</div>{% endfor %}
-    <button class="button wide" type="submit">Create account</button><p class="auth-switch">Already registered? <a href="{% url 'login' %}">Log in</a></p>
-  </form>
-</section>
+<div class="min-h-[80vh] relative flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 overflow-hidden text-stone-850">
+  <!-- Decorative colored glow background -->
+  <div class="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-amber-500/10 rounded-full blur-[100px] pointer-events-none"></div>
+  <div class="absolute bottom-1/4 right-1/4 translate-x-1/2 translate-y-1/2 w-96 h-96 bg-orange-500/10 rounded-full blur-[100px] pointer-events-none"></div>
+
+  <div class="max-w-md w-full relative z-10">
+    <div class="bg-white p-8 rounded-[36px] border border-stone-200 shadow-xl space-y-6">
+      <div class="text-center space-y-2">
+        <h2 class="text-3xl font-extrabold tracking-tight text-stone-900">
+          Create Account
+        </h2>
+        <p class="text-sm text-stone-500">
+          Patients can book visits. Doctors can manage schedules.
+        </p>
+      </div>
+
+      <form class="space-y-4" method="post">
+        {% csrf_token %}
+        {% for field in form %}
+          <div class="space-y-1.5">
+            <label class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">
+              {{ field.label }}
+            </label>
+            {% if field.field.widget.input_type == 'select' or field.field.choices %}
+              <div class="relative">
+                <select 
+                  name="{{ field.name }}" 
+                  id="{{ field.id_for_label }}"
+                  required
+                  class="w-full bg-[#FDFBF7] border border-stone-200 text-stone-850 focus:border-amber-500 focus:outline-none rounded-xl h-11 px-3 text-sm"
+                >
+                  {% for val, text in field.field.choices %}
+                    <option value="{{ val }}" {% if field.value == val %}selected{% endif %}>{{ text }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            {% else %}
+              <input 
+                type="{% if 'password' in field.name %}password{% elif 'email' in field.name %}email{% else %}text{% endif %}"
+                name="{{ field.name }}"
+                id="{{ field.id_for_label }}"
+                required
+                class="w-full bg-[#FDFBF7] border border-stone-200 text-stone-850 placeholder-stone-400 focus:border-amber-500 focus:outline-none rounded-xl h-11 px-4 text-sm"
+                value="{% if field.value and not 'password' in field.name %}{{ field.value }}{% endif %}"
+              />
+            {% endif %}
+
+            {% if field.help_text %}
+              <p class="text-[10px] text-stone-400 mt-1 leading-normal">* {{ field.help_text|safe }}</p>
+            {% endif %}
+            
+            {% for error in field.errors %}
+              <small class="text-xs text-red-500 font-medium block mt-1">{{ error }}</small>
+            {% endfor %}
+          </div>
+        {% endfor %}
+
+        <button 
+          type="submit"
+          class="w-full h-11 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold rounded-xl shadow-lg shadow-amber-500/10 hover:opacity-95 transition-all text-sm mt-6"
+        >
+          Create Account
+        </button>
+      </form>
+
+      <div class="text-center pt-2">
+        <p class="text-sm text-stone-550">
+          Already have an account?{' '}
+          <a href="{% url 'login' %}" class="font-bold text-amber-600 hover:underline">
+            Sign in
+          </a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

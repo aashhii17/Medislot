@@ -1,16 +1,81 @@
 {% extends "base.html" %}
 {% block title %}Doctor dashboard · MediSlot{% endblock %}
 {% block content %}
-<section class="dashboard-page">
-  <div class="dashboard-welcome"><div><span class="kicker">DOCTOR HOME</span><h1>Good day, Dr. {{ doctor.name }}.</h1><p>{{ doctor.specialty }} · {{ booked_count }} active appointment{{ booked_count|pluralize }}</p></div><div class="avatar small">{{ doctor.name|slice:":1" }}</div></div>
-  <div class="dashboard-panel"><div class="panel-title"><h2>Appointment schedule</h2><span>{{ appointments|length }} records</span></div>
-    <div class="doctor-appointment-list">
-      {% for appointment in appointments %}<article class="doctor-appointment">
-        <div class="schedule-time"><strong>{{ appointment.appointment_time|time:"g:i A" }}</strong><span>{{ appointment.appointment_date|date:"d M Y" }}</span></div>
-        <div><span class="status {{ appointment.status }}">{{ appointment.get_status_display }}</span><h3>{{ appointment.patient_name }}</h3><p>{{ appointment.reason }}</p><small>{{ appointment.patient_phone }} · {{ appointment.patient_email }}</small></div>
-        {% if appointment.status == "booked" %}<div class="doctor-actions"><form method="post" action="{% url 'update_appointment_status' appointment.pk 'completed' %}">{% csrf_token %}<button class="complete" type="submit">Mark completed</button></form><form method="post" action="{% url 'update_appointment_status' appointment.pk 'cancelled' %}">{% csrf_token %}<button class="cancel" type="submit">Cancel</button></form></div>{% endif %}
-      </article>{% empty %}<div class="empty"><h3>No appointments yet</h3><p>New patient bookings will appear here.</p></div>{% endfor %}
+<div class="w-full max-w-5xl mx-auto px-6 py-12 text-stone-850 space-y-10">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+    <div>
+      <span class="text-xs font-bold text-amber-600 tracking-widest uppercase">Doctor Home</span>
+      <h1 class="text-3xl lg:text-4xl font-black text-stone-900 mt-1">Good day, Dr. {{ doctor.name }}.</h1>
+      <p class="text-sm text-stone-500">{{ doctor.specialty }} · {{ booked_count }} active appointment{{ booked_count|pluralize }}</p>
+    </div>
+    
+    <div class="w-16 h-16 rounded-full bg-gradient-to-tr from-amber-500 to-orange-500 text-white flex items-center justify-center font-black text-xl uppercase border-2 border-stone-200">
+      {{ doctor.name|slice:":2" }}
     </div>
   </div>
-</section>
+
+  <div class="bg-white rounded-[36px] border border-stone-200 shadow-xl p-8 space-y-6">
+    <div class="flex items-center justify-between border-b border-stone-100 pb-4">
+      <h2 class="text-xl font-extrabold text-stone-900">Appointment Schedule</h2>
+      <span class="bg-stone-100 px-3 py-1 rounded-full text-xs font-bold text-stone-600">
+        {{ appointments|length }} records
+      </span>
+    </div>
+
+    <div class="space-y-4">
+      {% for appointment in appointments %}
+        <div class="bg-stone-50/50 rounded-[28px] border border-stone-200/60 p-6 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+          <div class="flex items-start gap-4">
+            <div class="w-24 h-16 rounded-2xl bg-amber-50 text-amber-700 flex flex-col items-center justify-center border border-amber-500/10 shrink-0 text-center px-2">
+              <span class="text-sm font-black leading-none">{{ appointment.appointment_time|time:"g:i A" }}</span>
+              <span class="text-[9px] font-bold uppercase tracking-wider mt-1">{{ appointment.appointment_date|date:"d M" }}</span>
+            </div>
+            
+            <div class="space-y-1">
+              <div class="flex items-center gap-2">
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider 
+                  {% if appointment.status == 'booked' %}bg-amber-100 text-amber-700{% elif appointment.status == 'completed' %}bg-emerald-100 text-emerald-700{% else %}bg-red-100 text-red-700{% endif %}"
+                >
+                  {{ appointment.get_status_display }}
+                </span>
+                <span class="text-[10px] text-stone-400 font-bold">#MS{{ appointment.pk|stringformat:"05d" }}</span>
+              </div>
+              <h4 class="font-extrabold text-stone-900">{{ appointment.patient_name }}</h4>
+              <p class="text-xs text-stone-555 leading-relaxed max-w-lg">{{ appointment.reason }}</p>
+              <p class="text-[10px] text-stone-400">{{ appointment.patient_phone }} · {{ appointment.patient_email }}</p>
+            </div>
+          </div>
+          
+          {% if appointment.status == "booked" %}
+            <div class="flex items-center gap-3">
+              <form method="post" action="{% url 'update_appointment_status' appointment.pk 'completed' %}">
+                {% csrf_token %}
+                <button 
+                  type="submit" 
+                  class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-750 text-white font-bold rounded-xl text-xs shadow-md transition-all hover:scale-[1.01]"
+                >
+                  Complete
+                </button>
+              </form>
+              <form method="post" action="{% url 'update_appointment_status' appointment.pk 'cancelled' %}">
+                {% csrf_token %}
+                <button 
+                  type="submit" 
+                  class="px-5 py-2.5 bg-stone-100 hover:bg-stone-250 text-stone-850 border border-stone-200 font-bold rounded-xl text-xs transition-colors"
+                >
+                  Cancel
+                </button>
+              </form>
+            </div>
+          {% endif %}
+        </div>
+      {% empty %}
+        <div class="bg-[#FDFBF7] border border-dashed border-stone-300 rounded-[36px] p-12 text-center space-y-3">
+          <h3 class="text-lg font-bold text-stone-850">No appointments scheduled</h3>
+          <p class="text-xs text-stone-400 max-w-sm mx-auto">New patient schedule slots will automatically populate here.</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
 {% endblock %}

@@ -14,17 +14,17 @@ from .models import Appointment, Doctor, Profile
 def home(request):
     query = request.GET.get("q", "").strip()
     specialty = request.GET.get("specialty", "").strip()
-    doctors = Doctor.objects.filter(is_available=True)
+    doctors = Doctor.objects.filter(is_active=True)
     if query:
-        doctors = doctors.filter(Q(name__icontains=query) | Q(specialty__icontains=query) | Q(qualification__icontains=query))
+        doctors = doctors.filter(Q(user__first_name__icontains=query) | Q(user__last_name__icontains=query) | Q(specialization__icontains=query) | Q(qualification__icontains=query))
     if specialty:
-        doctors = doctors.filter(specialty=specialty)
-    specialties = Doctor.objects.filter(is_available=True).values_list("specialty", flat=True).distinct().order_by("specialty")
+        doctors = doctors.filter(specialization=specialty)
+    specialties = Doctor.objects.filter(is_active=True).values_list("specialization", flat=True).distinct().order_by("specialization")
     return render(request, "appointments/home.html", {"doctors": doctors, "specialties": specialties, "query": query, "selected_specialty": specialty})
 
 
 def doctor_detail(request, pk):
-    doctor = get_object_or_404(Doctor, pk=pk, is_available=True)
+    doctor = get_object_or_404(Doctor, pk=pk, is_active=True)
     return render(request, "appointments/doctor_detail.html", {"doctor": doctor})
 
 
@@ -99,7 +99,7 @@ def book_appointment(request, pk):
     if profile.role != Profile.Role.PATIENT:
         messages.error(request, "Only patient accounts can book appointments.")
         return redirect("dashboard")
-    doctor = get_object_or_404(Doctor, pk=pk, is_available=True)
+    doctor = get_object_or_404(Doctor, pk=pk, is_active=True)
     initial = {
         "patient_name": request.user.get_full_name(),
         "patient_email": request.user.email,
