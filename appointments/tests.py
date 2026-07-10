@@ -11,7 +11,7 @@ from .models import Appointment, Doctor, Profile
 class AppointmentTests(TestCase):
     def setUp(self):
         doctor_user = User.objects.create_user(username="asha_doc", password="StrongPass123", first_name="Asha", last_name="Mehta")
-        self.doctor = Doctor.objects.create(user=doctor_user, specialization="Cardiology", qualification="MBBS, MD", experience_years=10, consultation_fee=800)
+        self.doctor = Doctor.objects.create(user=doctor_user, specialization="Cardiology", qualification="MBBS, MD", experience_years=10, consultation_fee=800, is_active=True)
         self.user = User.objects.create_user(username="ravi", password="StrongPass123", email="ravi@example.com", first_name="Ravi")
         Profile.objects.create(user=self.user, role=Profile.Role.PATIENT)
         self.client.login(username="ravi", password="StrongPass123")
@@ -60,6 +60,56 @@ class AppointmentTests(TestCase):
         self.client.login(username="admin", password="StrongPass123")
         self.assertRedirects(self.client.get(reverse("dashboard")), reverse("admin_dashboard"))
 
+    def test_patient_signup_creates_patient_profile(self):
+        self.client.logout()
+        signup_data = {
+            "username": "new_patient",
+            "first_name": "New",
+            "last_name": "Patient",
+            "email": "new_patient@example.com",
+            "password1": "StrongPass123!",
+            "password2": "StrongPass123!",
+        }
+        response = self.client.post(reverse("signup"), signup_data)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.endswith(reverse("dashboard")))
+        
+        # Verify user, profile and role
+        new_user = User.objects.get(username="new_patient")
+        self.assertEqual(new_user.email, "new_patient@example.com")
+        self.assertEqual(new_user.profile.role, Profile.Role.PATIENT)
+        self.assertIsNone(new_user.profile.doctor)
+
+    def test_doctor_signup_creates_inactive_doctor_profile(self):
+        self.client.logout()
+        signup_data = {
+            "username": "new_doc",
+            "first_name": "New",
+            "last_name": "Doc",
+            "email": "new_doc@example.com",
+            "password1": "StrongPass123!",
+            "password2": "StrongPass123!",
+            "license_number": "LIC-998877",
+            "specialization": "Neurology",
+            "qualification": "MD Neurology",
+            "experience_years": 8,
+            "consultation_fee": 1200,
+            "gender": "male",
+        }
+        response = self.client.post(reverse("doctor_signup"), signup_data)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.endswith(reverse("dashboard")))
+        
+        # Verify user, profile, doctor, and status
+        new_user = User.objects.get(username="new_doc")
+        self.assertEqual(new_user.profile.role, Profile.Role.DOCTOR)
+        self.assertIsNotNone(new_user.profile.doctor)
+        
+        doctor = new_user.profile.doctor
+        self.assertEqual(doctor.license_number, "LIC-998877")
+        self.assertEqual(doctor.specialization, "Neurology")
+        self.assertFalse(doctor.is_active)  # Must be inactive/unverified by default
+
     def test_health_check_endpoint(self):
         response = self.client.get(reverse("health_check"))
         self.assertEqual(response.status_code, 200)
@@ -84,7 +134,8 @@ class AppointmentsRestTests(APITestCase):
             qualification="MBBS, MD", 
             experience_years=10, 
             consultation_fee=800,
-            rating=4.5
+            rating=4.5,
+            is_active=True
         )
         self.user = User.objects.create_user(
             username="ravi_api", 
