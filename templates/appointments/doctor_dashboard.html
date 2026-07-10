@@ -9,8 +9,16 @@
       <p class="text-sm text-stone-500">{{ doctor.specialty }} · {{ booked_count }} active appointment{{ booked_count|pluralize }}</p>
     </div>
     
-    <div class="w-16 h-16 rounded-full bg-gradient-to-tr from-amber-500 to-orange-500 text-white flex items-center justify-center font-black text-xl uppercase border-2 border-stone-200">
-      {{ doctor.name|slice:":2" }}
+    <div class="flex items-center gap-4">
+      <a 
+        href="{% url 'password_change' %}" 
+        class="inline-flex items-center justify-center px-5 py-3 border border-stone-200 hover:bg-stone-50 text-stone-700 font-bold rounded-xl text-xs transition-colors"
+      >
+        Change Password
+      </a>
+      <div class="w-16 h-16 rounded-full bg-gradient-to-tr from-amber-500 to-orange-500 text-white flex items-center justify-center font-black text-xl uppercase border-2 border-stone-200 shrink-0">
+        {{ doctor.name|slice:":2" }}
+      </div>
     </div>
   </div>
 

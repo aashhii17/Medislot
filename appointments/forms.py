@@ -65,7 +65,7 @@ class SignUpForm(UserCreationForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["doctor"].queryset = Doctor.objects.filter(user_profile__isnull=True).order_by("name")
+        self.fields["doctor"].queryset = Doctor.objects.filter(user_profile__isnull=True).order_by("user__first_name", "user__last_name")
 
     def clean_email(self):
         email = self.cleaned_data["email"].lower()
