@@ -18,6 +18,7 @@ VERCEL_URL = os.environ.get("VERCEL_URL")
 if VERCEL_URL:
     ALLOWED_HOSTS.append(VERCEL_URL)
     ALLOWED_HOSTS.append(f".{VERCEL_URL}")
+    ALLOWED_HOSTS.append(".vercel.app")
 
 INSTALLED_APPS = [
     "django.contrib.admin",
