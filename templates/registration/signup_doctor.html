@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{% block title %}Doctor Registration · MediSlot{% endblock %}
+{% block content %}
+<div class="min-h-screen relative flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 overflow-hidden text-stone-850">
+  <!-- Decorative colored glow background -->
+  <div class="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-amber-500/10 rounded-full blur-[100px] pointer-events-none"></div>
+  <div class="absolute bottom-1/4 right-1/4 translate-x-1/2 translate-y-1/2 w-96 h-96 bg-orange-500/10 rounded-full blur-[100px] pointer-events-none"></div>
+
+  <div class="max-w-3xl w-full relative z-10">
+    <div class="bg-white p-8 sm:p-12 rounded-[36px] border border-stone-200 shadow-2xl space-y-8">
+      <div class="text-center space-y-2">
+        <span class="inline-block bg-amber-500/10 text-amber-700 px-4 py-1.5 rounded-full text-xs font-bold tracking-wider uppercase">
+          Medical Board Registration
+        </span>
+        <h2 class="text-3xl font-extrabold tracking-tight text-stone-900">
+          Register as a Doctor
+        </h2>
+        <p class="text-sm text-stone-500 max-w-md mx-auto">
+          Create your professional profile. Once verified by our administrators, patients will be able to search and book appointments with you.
+        </p>
+      </div>
+
+      <form class="space-y-6" method="post">
+        {% csrf_token %}
+        
+        <!-- Account Information Section -->
+        <div class="space-y-4">
+          <h3 class="text-sm font-extrabold text-stone-900 border-b border-stone-100 pb-2 uppercase tracking-wider">Account Credentials</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="space-y-1.5">
+              <label for="{{ form.username.id_for_label }}" class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">Username</label>
+              <input type="text" name="username" id="{{ form.username.id_for_label }}" required class="w-full bg-[#FDFBF7] border border-stone-200 text-stone-850 rounded-xl h-11 px-4 text-sm focus:border-amber-500 focus:outline-none" value="{{ form.username.value|default:'' }}">
+              {% for error in form.username.errors %}<small class="text-xs text-red-500 font-medium block">{{ error }}</small>{% endfor %}
+            </div>
+            <div class="space-y-1.5">
+              <label for="{{ form.email.id_for_label }}" class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">Email Address</label>
+              <input type="email" name="email" id="{{ form.email.id_for_label }}" required class="w-full bg-[#FDFBF7] border border-stone-200 text-stone-850 rounded-xl h-11 px-4 text-sm focus:border-amber-500 focus:outline-none" value="{{ form.email.value|default:'' }}">
+              {% for error in form.email.errors %}<small class="text-xs text-red-500 font-medium block">{{ error }}</small>{% endfor %}
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="space-y-1.5">
+              <label for="{{ form.first_name.id_for_label }}" class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">First Name</label>
+              <input type="text" name="first_name" id="{{ form.first_name.id_for_label }}" required class="w-full bg-[#FDFBF7] border border-stone-200 text-stone-850 rounded-xl h-11 px-4 text-sm focus:border-amber-500 focus:outline-none" value="{{ form.first_name.value|default:'' }}">
+            </div>
+            <div class="space-y-1.5">
+              <label for="{{ form.last_name.id_for_label }}" class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">Last Name</label>
+              <input type="text" name="last_name" id="{{ form.last_name.id_for_label }}" required class="w-full bg-[#FDFBF7] border border-stone-200 text-stone-850 rounded-xl h-11 px-4 text-sm focus:border-amber-500 focus:outline-none" value="{{ form.last_name.value|default:'' }}">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="space-y-1.5">
+              <label for="{{ form.password1.id_for_label }}" class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">Password</label>
+              <input type="password" name="password1" id="{{ form.password1.id_for_label }}" required class="w-full bg-[#FDFBF7] border border-stone-200 text-stone-850 rounded-xl h-11 px-4 text-sm focus:border-amber-500 focus:outline-none">
+              {% if form.password1.help_text %}<p class="text-[9px] text-stone-400 leading-normal">{{ form.password1.help_text|safe }}</p>{% endif %}
+            </div>
+            <div class="space-y-1.5">
+              <label for="{{ form.password2.id_for_label }}" class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">Confirm Password</label>
+              <input type="password" name="password2" id="{{ form.password2.id_for_label }}" required class="w-full bg-[#FDFBF7] border border-stone-200 text-stone-850 rounded-xl h-11 px-4 text-sm focus:border-amber-500 focus:outline-none">
+            </div>
+          </div>
+        </div>
+
+        <!-- Professional Information Section -->
+        <div class="space-y-4 pt-4 border-t border-stone-100">
+          <h3 class="text-sm font-extrabold text-stone-900 border-b border-stone-100 pb-2 uppercase tracking-wider">Professional Credentials</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="space-y-1.5">
+              <label for="{{ form.license_number.id_for_label }}" class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">Medical License Number *</label>
+              <input type="text" name="license_number" id="{{ form.license_number.id_for_label }}" required placeholder="e.g. MCI-12345" class="w-full bg-[#FDFBF7] border border-stone-200 text-stone-850 rounded-xl h-11 px-4 text-sm focus:border-amber-500 focus:outline-none" value="{{ form.license_number.value|default:'' }}">
+              {% for error in form.license_number.errors %}<small class="text-xs text-red-500 font-medium block">{{ error }}</small>{% endfor %}
+            </div>
+            <div class="space-y-1.5">
+              <label for="{{ form.specialization.id_for_label }}" class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">Specialization *</label>
+              <input type="text" name="specialization" id="{{ form.specialization.id_for_label }}" required placeholder="e.g. Cardiology" class="w-full bg-[#FDFBF7] border border-stone-200 text-stone-850 rounded-xl h-11 px-4 text-sm focus:border-amber-500 focus:outline-none" value="{{ form.specialization.value|default:'' }}">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="space-y-1.5">
+              <label for="{{ form.qualification.id_for_label }}" class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">Qualification *</label>
+              <input type="text" name="qualification" id="{{ form.qualification.id_for_label }}" required placeholder="e.g. MBBS, MD" class="w-full bg-[#FDFBF7] border border-stone-200 text-stone-850 rounded-xl h-11 px-4 text-sm focus:border-amber-500 focus:outline-none" value="{{ form.qualification.value|default:'' }}">
+            </div>
+            <div class="space-y-1.5">
+              <label for="{{ form.experience_years.id_for_label }}" class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">Experience (Years) *</label>
+              <input type="number" name="experience_years" id="{{ form.experience_years.id_for_label }}" required min="0" class="w-full bg-[#FDFBF7] border border-stone-200 text-stone-850 rounded-xl h-11 px-4 text-sm focus:border-amber-500 focus:outline-none" value="{{ form.experience_years.value|default:'' }}">
+            </div>
+            <div class="space-y-1.5">
+              <label for="{{ form.consultation_fee.id_for_label }}" class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">Consultation Fee (₹) *</label>
+              <input type="number" name="consultation_fee" id="{{ form.consultation_fee.id_for_label }}" required min="0" step="0.01" class="w-full bg-[#FDFBF7] border border-stone-200 text-stone-850 rounded-xl h-11 px-4 text-sm focus:border-amber-500 focus:outline-none" value="{{ form.consultation_fee.value|default:'' }}">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="space-y-1.5">
+              <label for="{{ form.hospital.id_for_label }}" class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">Affiliated Hospital</label>
+              <select name="hospital" id="{{ form.hospital.id_for_label }}" class="w-full bg-[#FDFBF7] border border-stone-200 text-stone-850 rounded-xl h-11 px-3 text-sm focus:border-amber-500 focus:outline-none">
+                {% for hospital_opt in form.hospital.field.queryset %}
+                  <option value="{{ hospital_opt.pk }}" {% if form.hospital.value|stringformat:"s" == hospital_opt.pk|stringformat:"s" %}selected{% endif %}>{{ hospital_opt.name }}</option>
+                {% empty %}
+                  <option value="">No hospitals available</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="space-y-1.5">
+              <label for="{{ form.gender.id_for_label }}" class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">Gender</label>
+              <select name="gender" id="{{ form.gender.id_for_label }}" class="w-full bg-[#FDFBF7] border border-stone-200 text-stone-850 rounded-xl h-11 px-3 text-sm focus:border-amber-500 focus:outline-none">
+                <option value="male" {% if form.gender.value == 'male' %}selected{% endif %}>Male</option>
+                <option value="female" {% if form.gender.value == 'female' %}selected{% endif %}>Female</option>
+                <option value="other" {% if form.gender.value == 'other' %}selected{% endif %}>Other</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="space-y-1.5">
+            <label for="{{ form.bio.id_for_label }}" class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">Brief Professional Biography</label>
+            <textarea name="bio" id="{{ form.bio.id_for_label }}" class="w-full bg-[#FDFBF7] border border-stone-200 text-stone-850 rounded-xl p-4 text-sm focus:border-amber-500 focus:outline-none" rows="3" placeholder="Tell patients about your medical background and specialist experience...">{{ form.bio.value|default:'' }}</textarea>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="space-y-1.5">
+              <label for="{{ form.languages.id_for_label }}" class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">Languages Spoken</label>
+              <input type="text" name="languages" id="{{ form.languages.id_for_label }}" class="w-full bg-[#FDFBF7] border border-stone-200 text-stone-850 rounded-xl h-11 px-4 text-sm focus:border-amber-500 focus:outline-none" value="{{ form.languages.value|default:'Hindi, English' }}">
+            </div>
+            
+            <div class="flex items-center gap-6 pt-6">
+              <label class="flex items-center gap-2 text-xs font-bold text-stone-600 cursor-pointer">
+                <input type="checkbox" name="online_consultation" id="{{ form.online_consultation.id_for_label }}" class="rounded text-amber-500 focus:ring-amber-500" {% if form.online_consultation.value|default:True %}checked{% endif %}>
+                Online Consultation
+              </label>
+              <label class="flex items-center gap-2 text-xs font-bold text-stone-600 cursor-pointer">
+                <input type="checkbox" name="insurance_accepted" id="{{ form.insurance_accepted.id_for_label }}" class="rounded text-amber-500 focus:ring-amber-500" {% if form.insurance_accepted.value|default:True %}checked{% endif %}>
+                Insurance Accepted
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <button 
+          type="submit"
+          class="w-full h-12 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold rounded-xl shadow-lg shadow-amber-500/10 hover:opacity-95 transition-all text-sm mt-6 hover:scale-[1.01]"
+        >
+          Submit Registration Request
+        </button>
+      </form>
+
+      <div class="text-center pt-2 space-y-2">
+        <p class="text-sm text-stone-550">
+          Already have an account? 
+          <a href="{% url 'login' %}" class="font-bold text-amber-600 hover:underline">
+            Sign in
+          </a>
+        </p>
+        <p class="text-xs text-stone-400 pt-2 border-t border-stone-100">
+          Are you a patient? 
+          <a href="{% url 'signup' %}" class="font-bold text-amber-600 hover:underline">
+            Register as a Patient
+          </a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

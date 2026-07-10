@@ -2,6 +2,21 @@
 {% block title %}Doctor dashboard · MediSlot{% endblock %}
 {% block content %}
 <div class="w-full max-w-5xl mx-auto px-6 py-12 text-stone-850 space-y-10">
+  {% if not doctor.is_active %}
+    <div class="bg-amber-50 border border-amber-200 rounded-[28px] p-6 flex items-start gap-4 shadow-sm">
+      <div class="w-10 h-10 rounded-full bg-amber-500/10 text-amber-700 flex items-center justify-center font-bold text-lg shrink-0">
+        ⚠️
+      </div>
+      <div class="space-y-1">
+        <h4 class="font-extrabold text-stone-900">Profile Pending Verification</h4>
+        <p class="text-xs text-stone-500 leading-normal">
+          Your credentials and medical license (License #: <span class="font-mono text-stone-700">{{ doctor.license_number|default:"N/A" }}</span>) are currently under review by our medical board. 
+          You can manage your dashboard, but you will not appear in patient search directories or receive bookings until verified.
+        </p>
+      </div>
+    </div>
+  {% endif %}
+
   <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
     <div>
       <span class="text-xs font-bold text-amber-600 tracking-widest uppercase">Doctor Home</span>

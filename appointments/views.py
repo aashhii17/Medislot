@@ -7,7 +7,7 @@ from django.http import HttpResponseForbidden, HttpResponseNotAllowed
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
-from .forms import AppointmentForm, SignUpForm
+from .forms import AppointmentForm, PatientSignUpForm, DoctorSignUpForm
 from .models import Appointment, Doctor, Profile
 
 
@@ -31,7 +31,7 @@ def doctor_detail(request, pk):
 def signup(request):
     if request.user.is_authenticated:
         return redirect("dashboard")
-    form = SignUpForm(request.POST or None)
+    form = PatientSignUpForm(request.POST or None)
     if request.method == "POST" and form.is_valid():
         with transaction.atomic():
             user = form.save(commit=False)
@@ -39,11 +39,53 @@ def signup(request):
             user.first_name = form.cleaned_data["first_name"]
             user.last_name = form.cleaned_data["last_name"]
             user.save()
-            Profile.objects.create(user=user, role=form.cleaned_data["role"], doctor=form.cleaned_data.get("doctor"))
+            Profile.objects.create(user=user, role=Profile.Role.PATIENT)
         login(request, user)
         messages.success(request, "Welcome to MediSlot! Your account is ready.")
         return redirect("dashboard")
     return render(request, "registration/signup.html", {"form": form})
+
+
+def doctor_signup(request):
+    if request.user.is_authenticated:
+        return redirect("dashboard")
+    form = DoctorSignUpForm(request.POST or None)
+    if request.method == "POST" and form.is_valid():
+        with transaction.atomic():
+            user = form.save(commit=False)
+            user.email = form.cleaned_data["email"]
+            user.first_name = form.cleaned_data["first_name"]
+            user.last_name = form.cleaned_data["last_name"]
+            user.save()
+
+            # Create Doctor Profile
+            doctor = Doctor.objects.create(
+                user=user,
+                license_number=form.cleaned_data["license_number"],
+                specialization=form.cleaned_data["specialization"],
+                qualification=form.cleaned_data["qualification"],
+                experience_years=form.cleaned_data["experience_years"],
+                consultation_fee=form.cleaned_data["consultation_fee"],
+                hospital=form.cleaned_data.get("hospital"),
+                bio=form.cleaned_data.get("bio", ""),
+                languages=form.cleaned_data.get("languages", "Hindi, English"),
+                online_consultation=form.cleaned_data.get("online_consultation", True),
+                insurance_accepted=form.cleaned_data.get("insurance_accepted", True),
+                gender=form.cleaned_data.get("gender", "male"),
+                is_active=False  # Unverified by default
+            )
+
+            # Create Profile mapping
+            Profile.objects.create(user=user, role=Profile.Role.DOCTOR, doctor=doctor)
+
+        login(request, user)
+        messages.warning(
+            request, 
+            "Registration successful! Your doctor profile is currently pending verification. "
+            "You will appear in patient searches once verified by the admin."
+        )
+        return redirect("dashboard")
+    return render(request, "registration/signup_doctor.html", {"form": form})
 
 
 @login_required

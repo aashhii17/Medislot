@@ -7,6 +7,7 @@ from django.db.models import Q
 from django.utils import timezone
 
 from .models import Appointment, Doctor, Profile
+from hospitals.models import Hospital
 
 
 TIME_CHOICES = [(time(hour, minute), f"{time(hour, minute):%I:%M %p}") for hour in range(9, 18) for minute in (0, 30)]
@@ -49,23 +50,14 @@ class LookupForm(forms.Form):
     email = forms.EmailField(label="Patient email", widget=forms.EmailInput(attrs={"placeholder": "you@example.com"}))
 
 
-class SignUpForm(UserCreationForm):
+class PatientSignUpForm(UserCreationForm):
     email = forms.EmailField(required=True)
     first_name = forms.CharField(max_length=60, label="First name")
     last_name = forms.CharField(max_length=60, label="Last name")
-    role = forms.ChoiceField(choices=Profile.Role.choices, widget=forms.RadioSelect)
-    doctor = forms.ModelChoiceField(
-        queryset=Doctor.objects.none(), required=False, label="Your doctor profile",
-        help_text="Required only when signing up as a doctor.",
-    )
 
     class Meta(UserCreationForm.Meta):
         model = User
-        fields = ["username", "first_name", "last_name", "email", "role", "doctor", "password1", "password2"]
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["doctor"].queryset = Doctor.objects.filter(user_profile__isnull=True).order_by("user__first_name", "user__last_name")
+        fields = ["username", "first_name", "last_name", "email"]
 
     def clean_email(self):
         email = self.cleaned_data["email"].lower()
@@ -73,10 +65,31 @@ class SignUpForm(UserCreationForm):
             raise forms.ValidationError("An account with this email already exists.")
         return email
 
-    def clean(self):
-        cleaned = super().clean()
-        if cleaned.get("role") == Profile.Role.DOCTOR and not cleaned.get("doctor"):
-            self.add_error("doctor", "Select your doctor profile.")
-        if cleaned.get("role") == Profile.Role.PATIENT:
-            cleaned["doctor"] = None
-        return cleaned
+
+class DoctorSignUpForm(UserCreationForm):
+    email = forms.EmailField(required=True)
+    first_name = forms.CharField(max_length=60, label="First name")
+    last_name = forms.CharField(max_length=60, label="Last name")
+    
+    # Doctor professional fields
+    license_number = forms.CharField(max_length=100, label="Medical License / Registration Number", required=True)
+    specialization = forms.CharField(max_length=100, label="Specialization (e.g. Cardiology)", required=True)
+    qualification = forms.CharField(max_length=200, label="Qualification (e.g. MBBS, MD)", required=True)
+    experience_years = forms.IntegerField(min_value=0, label="Years of Experience", required=True)
+    consultation_fee = forms.DecimalField(min_value=0, max_digits=10, decimal_places=2, label="Consultation Fee (₹)", required=True)
+    hospital = forms.ModelChoiceField(queryset=Hospital.objects.all(), label="Affiliated Hospital", required=False, empty_label="Select Hospital")
+    bio = forms.CharField(widget=forms.Textarea(attrs={"rows": 3}), required=False, label="Brief Bio (Patient facing info)")
+    languages = forms.CharField(max_length=200, initial="Hindi, English", label="Languages Spoken", required=False)
+    online_consultation = forms.BooleanField(initial=True, required=False, label="Available for Online Consultation")
+    insurance_accepted = forms.BooleanField(initial=True, required=False, label="Insurance Accepted")
+    gender = forms.ChoiceField(choices=[('male', 'Male'), ('female', 'Female'), ('other', 'Other')], initial='male', label="Gender")
+
+    class Meta(UserCreationForm.Meta):
+        model = User
+        fields = ["username", "first_name", "last_name", "email"]
+
+    def clean_email(self):
+        email = self.cleaned_data["email"].lower()
+        if User.objects.filter(email__iexact=email).exists():
+            raise forms.ValidationError("An account with this email already exists.")
+        return email

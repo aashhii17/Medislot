@@ -19,7 +19,8 @@ class Doctor(models.Model):
     online_consultation = models.BooleanField(default=True)
     insurance_accepted = models.BooleanField(default=True)
     gender = models.CharField(max_length=10, choices=[('male', 'Male'), ('female', 'Female'), ('other', 'Other')], default='male')
-    is_active = models.BooleanField(default=True)
+    license_number = models.CharField(max_length=100, blank=True)
+    is_active = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     @property
